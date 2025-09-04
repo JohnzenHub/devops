@@ -10,6 +10,7 @@ describe("Tasks API", () => {
   it("should return an array of tasks", async () => {
     const res = await request(app).get("/api/tasks");
     expect(Array.isArray(res.body)).toBe(true);
+    console.log(res.body, "data seed successfully");
   });
   it("should create a task", async () => {
     const res = await request(app)

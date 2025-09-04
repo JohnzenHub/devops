@@ -1,0 +1,58 @@
+name: CI for MERN use Docker and AWS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  mongo-init:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:latest
+        ports: ["27017:27017"]
+        # env:
+        #   MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+        #   MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          # cache: "npm"
+          # cache-dependency-path: ./backend/package-lock.json
+          # cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          until nc -z mongo 27017; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 2
+          done
+            echo "MongoDB is ready!"
+      - name: Seed MongoDB
+        working-directory: ./backend
+        run: |
+          npm install
+          node seedTasksData.js
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code for test`
+        uses: actions/checkout@v5
+      - name: Set up Node.js for test
+        uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+
+      - name: Install dependencies for test
+        working-directory: ./backend
+        run: npm install
+
+      - name: Runnning backend tests
+        run: npm run test
