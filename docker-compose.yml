@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env.prod # Load all variables from this file
+    ports:
+      - "3001:3001" # The host port should match the PORT in your .env file if possible
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env.prod # Load all variables from this file
+    ports:
+      - "3000:3000" # The host port should match the PORT in your .env file if possible
+    depends_on:
+      - backend
