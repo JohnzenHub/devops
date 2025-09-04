@@ -10,7 +10,7 @@ jobs:
 
     services:
       mongo:
-        image: mongo:latest
+        image: mongo
         ports: ["27017:27017"]
         # env:
         #   MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
@@ -42,9 +42,11 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    needs: mongo-init
     steps:
       - name: Checkout code for test`
         uses: actions/checkout@v5
+
       - name: Set up Node.js for test
         uses: actions/setup-node@v5
         with:
@@ -55,4 +57,5 @@ jobs:
         run: npm install
 
       - name: Runnning backend tests
+        working-directory: ./backend
         run: npm run test
